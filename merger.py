@@ -26,11 +26,11 @@ class ChunkIdFinder:
         return fcst_chunk_id, nearest_point
     
 
-@mergerServerApp.route('/test')
+@mergerServerApp.route('/test', methods=['GET'])
 def hello():
     return jsonify({'message': 'Hello, World from merger'})
 
-@mergerServerApp.route('/update', methods=['POST'])
+@mergerServerApp.route('/update', methods=['PUT'])
 def update():
     data = request.json  # Assuming the incoming data is in JSON format
 
