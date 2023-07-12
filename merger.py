@@ -149,5 +149,5 @@ def save_updated_data(ds, url):
 
 
 
-if __name__ == '__main__1':
-     mergerServerApp.run(host="0.0.0.0", port=3200, debug=False)
+if __name__ == '__main__':
+     mergerServerApp.run(host="0.0.0.0", port=3200, debug=True)
