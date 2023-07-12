@@ -28,7 +28,7 @@ class ChunkIdFinder:
 
 @mergerServerApp.route('/test')
 def hello():
-    return jsonify({'message': 'Hello, World from mainServer'})
+    return jsonify({'message': 'Hello, World from merger'})
 
 @mergerServerApp.route('/update', methods=['POST'])
 def update():
