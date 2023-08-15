@@ -7,6 +7,8 @@ import numpy as np
 from pprint import pprint
 import os
 from datetime import datetime
+import setproctitle
+setproctitle.setproctitle("HRRRdataMerger")
 
 mergerServerApp = Flask(__name__)
 data_folder = os.path.join(os.path.dirname(os.getcwd()), 'dataStore/now/')
