@@ -30,7 +30,7 @@ class ChunkIdFinder:
 
 @mergerServerApp.route('/test', methods=['GET'])
 def hello():
-    return jsonify({'message': 'Hello, World from merger'})
+    return jsonify({'message': 'Hello, World from merger 12'})
 
 @mergerServerApp.route('/update', methods=['PUT'])
 def update():
@@ -152,4 +152,4 @@ def save_updated_data(ds, url):
 
 
 if __name__ == '__main__':
-     mergerServerApp.run(host="0.0.0.0", port=3200, debug=False)
+     mergerServerApp.run(host="0.0.0.0", port=3200, debug=True)
