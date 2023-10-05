@@ -40,14 +40,14 @@ def update():
     lon = data['long']
     field = data['field']
     datetime = data['datetime']
-    temperature = data['temperature']
+    value = data['value']
     chunk_id_finder = ChunkIdFinder()
     chunk_id, nearest_point = chunk_id_finder.getChunkId(lat, lon)
     # Retrieve the zarr chunk file based on timestamp
     # chunk_filename = get_chunk_filename(chunk_id)  # Implement your own function to get the filename
     # ds = retrieve_data_local(chunk_filename)
     # pprint(chunk_filename)
-    updateChunk(chunk_id,nearest_point,field,datetime,temperature)
+    updateChunk(chunk_id,nearest_point,field,datetime,value)
     # ds = open_chunked_zarr_chunk(chunk_filename)
     # print(ds)
     # Find the nearest grid point in the chunk file based on lat/lon
@@ -77,7 +77,7 @@ def find_matching_folder(datetime_value, folder_path):
 
 
 
-def updateChunk(id, nearest_point,field,datetime, temperature):
+def updateChunk(id, nearest_point,field,datetime, value):
     path = find_matching_folder(datetime,data_folder)
     relative_path = os.path.join(path, '1', field, str(id))
     current_directory = os.getcwd()
@@ -87,8 +87,8 @@ def updateChunk(id, nearest_point,field,datetime, temperature):
     # Create a writable copy of the data array
     data_copy = np.copy(data)
     pprint(data_copy[nearest_point.in_chunk_x, nearest_point.in_chunk_y])
-    # Update the temperature value in the writable copy
-    data_copy[nearest_point.in_chunk_x, nearest_point.in_chunk_y] = temperature
+    # Update the value value in the writable copy
+    data_copy[nearest_point.in_chunk_x, nearest_point.in_chunk_y] = value
     
     # Compress the modified data
     compressor = ncd.Blosc(cname='zstd', clevel=3, shuffle=ncd.Blosc.SHUFFLE)
