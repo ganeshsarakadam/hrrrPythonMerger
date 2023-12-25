@@ -1,0 +1,7 @@
+version: '1'
+services:
+  server:
+    build: .
+    image: "merger"
+    ports:
+     - "3200:3200"

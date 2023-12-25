@@ -7,8 +7,11 @@ import numpy as np
 from pprint import pprint
 import os
 from datetime import datetime
-import setproctitle
-setproctitle.setproctitle("HRRRdataMerger")
+
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required
+
+# import setproctitle
+# setproctitle.setproctitle("HRRRdataMerger")
 
 mergerServerApp = Flask(__name__)
 data_folder = os.path.join(os.path.dirname(os.getcwd()), 'dataStore/now/')
@@ -32,6 +35,8 @@ class ChunkIdFinder:
 def hello():
     return jsonify({'message': 'Hello, World from merger'})
 
+
+@jwt_required
 @mergerServerApp.route('/update', methods=['PUT'])
 def update():
     data = request.json  # Assuming the incoming data is in JSON format

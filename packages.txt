@@ -1,0 +1,11 @@
+Flask==2.1.2
+s3fs==0.4.2
+xarray==0.15.1
+cartopy==0.18.0
+numcodecs==0.6.4
+cachetools==4.1.0
+flask_jwt_extended==3.24.1
+Werkzeug==2.0.0
+shapely==1.8.5
+dask
+zarr
