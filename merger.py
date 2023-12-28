@@ -7,13 +7,10 @@ import numpy as np
 from pprint import pprint
 import os
 from datetime import datetime
+from flask_jwt_extended import JWTManager, jwt_required
 
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 
-# import setproctitle
-# setproctitle.setproctitle("HRRRdataMerger")
-
-mergerServerApp = Flask(__name__)# Set up Flask-JWT-Extended
+mergerServerApp = Flask(__name__)
 mergerServerApp.config['JWT_SECRET_KEY'] = 'hrrr-weather-lawn'
 jwt = JWTManager(mergerServerApp)
 
@@ -34,16 +31,27 @@ class ChunkIdFinder:
         return fcst_chunk_id, nearest_point
     
 
-@mergerServerApp.route('/test', methods=['GET'])
+
+@mergerServerApp.before_request
+def validate_request():
+    required_fields = ['lat', 'long', 'field', 'datetime','value']  # replace with your actual fields
+    if not request.json:
+        return jsonify({'error': 'Missing JSON in request body'}), 400
+    for field in required_fields:
+        if field not in request.json:
+            return jsonify({'error': f'Missing field: {field}'}), 400
+        
+
+
+@mergerServerApp.route('/health', methods=['GET'])
 def hello():
-    return jsonify({'message': 'Hello, World from merger'})
+    return jsonify({'status': 'Ok'})
 
 
 @jwt_required()
 @mergerServerApp.route('/update', methods=['PUT'])
 def update():
-    data = request.json  # Assuming the incoming data is in JSON format
-
+    data = request.json  
     lat = data['lat']
     lon = data['long']
     field = data['field']
@@ -51,21 +59,7 @@ def update():
     value = data['value']
     chunk_id_finder = ChunkIdFinder()
     chunk_id, nearest_point = chunk_id_finder.getChunkId(lat, lon)
-    # Retrieve the zarr chunk file based on timestamp
-    # chunk_filename = get_chunk_filename(chunk_id)  # Implement your own function to get the filename
-    # ds = retrieve_data_local(chunk_filename)
-    # pprint(chunk_filename)
     updateChunk(chunk_id,nearest_point,field,datetime,value)
-    # ds = open_chunked_zarr_chunk(chunk_filename)
-    # print(ds)
-    # Find the nearest grid point in the chunk file based on lat/lon
-    # nearest_index = find_nearest_grid_point(ds, lat, lon)
-
-    # # Update the temperature at the nearest grid point
-    # update_temperature(ds, nearest_index, temperature)
-
-    # # Save the updated zarr chunk file
-    # save_updated_data(ds, chunk_filename)
     return 'Updated'
 
 
@@ -80,7 +74,7 @@ def find_matching_folder(datetime_value, folder_path):
             return os.path.join(folder_path, folder)
     
 
-    return None  # Return None if no matching folder is found
+    return None 
 
 
 
@@ -97,7 +91,6 @@ def updateChunk(id, nearest_point,field,datetime, value):
     pprint(data_copy[nearest_point.in_chunk_x, nearest_point.in_chunk_y])
     # Update the value value in the writable copy
     data_copy[nearest_point.in_chunk_x, nearest_point.in_chunk_y] = value
-    
     # Compress the modified data
     compressor = ncd.Blosc(cname='zstd', clevel=3, shuffle=ncd.Blosc.SHUFFLE)
     compressed_data = compressor.encode(data_copy)
@@ -113,10 +106,8 @@ def updateChunk(id, nearest_point,field,datetime, value):
 
 def retrieve_data_local(url):
     pprint(url)
-    with open(url, 'rb') as compressed_data: # using regular file system
+    with open(url, 'rb') as compressed_data:
         buffer = ncd.blosc.decompress(compressed_data.read())
-        # pprint(buffer)
-
         dtype = "<f4"
         if "surface/PRES" in url: # surface/PRES is the only variable with a larger data type
             dtype = "<f4"
@@ -138,7 +129,6 @@ def retrieve_data_local(url):
 
 def open_chunked_zarr_chunk(chunk_filename):
     ds = xr.open_zarr(chunk_filename)
-    # print(ds)
     return ds
 
 
