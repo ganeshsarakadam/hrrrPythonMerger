@@ -1,7 +1,9 @@
 version: '1'
 services:
-  server:
+  merger:
     build: .
     image: "merger"
     ports:
      - "3200:3200"
+    volumes:
+      - ../dataStore/now/:/dataStore/now

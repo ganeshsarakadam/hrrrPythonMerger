@@ -13,7 +13,10 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 # import setproctitle
 # setproctitle.setproctitle("HRRRdataMerger")
 
-mergerServerApp = Flask(__name__)
+mergerServerApp = Flask(__name__)# Set up Flask-JWT-Extended
+mergerServerApp.config['JWT_SECRET_KEY'] = 'hrrr-weather-lawn'
+jwt = JWTManager(mergerServerApp)
+
 data_folder = os.path.join(os.path.dirname(os.getcwd()), 'dataStore/now/')
 class ChunkIdFinder:
     fs = s3fs.S3FileSystem(anon=True)
@@ -36,7 +39,7 @@ def hello():
     return jsonify({'message': 'Hello, World from merger'})
 
 
-@jwt_required
+@jwt_required()
 @mergerServerApp.route('/update', methods=['PUT'])
 def update():
     data = request.json  # Assuming the incoming data is in JSON format
