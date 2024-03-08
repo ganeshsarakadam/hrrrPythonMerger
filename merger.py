@@ -66,7 +66,7 @@ def hello():
     return jsonify({'status': 'Ok'})
 
 
-# @jwt_required()
+@jwt_required()
 @mergerServerApp.route('/update', methods=['PUT'])
 def update():
     data = request.json  
